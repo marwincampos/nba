@@ -14,7 +14,19 @@
     </div>
     <div class="col-12 py-4">
       <h4>Escoge una fecha</h4>
-      <input type="date" name="fecha" [(ngModel)]="fecha" (ngModelChange)="mostrarJuegos($event)">
+      <label>Día</label>
+      <select [(ngModel)]="dia">
+        <option *ngFor='let diaKey of ["01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31"]' value="{{diaKey}}" ngDefaultControl>{{diaKey}}</option>
+      </select>
+       <label>Mes</label>
+      <select [(ngModel)]="mes">
+        <option *ngFor='let mesKey of ["01","02","03","04","05","06","07","08","09","10","11","12"]' value="{{mesKey}}" ngDefaultControl>{{mesKey}}</option>
+      </select>
+      <label>Año</label>
+      <select [(ngModel)]="anio">
+        <option *ngFor='let anioKey of ["2017","2018"]' value="{{anioKey}}" ngDefaultControl>{{anioKey}}</option>
+      </select>
+      <button type="button" class="btn btn-primary" (click)="mostrarJuegos()">Buscar</button>
     </div>
     <div class="col-lg-12">
       <div class="card">

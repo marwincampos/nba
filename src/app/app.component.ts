@@ -14,12 +14,14 @@ import { CalendarioApiService } from './servicios/calendarioApi.service';
 export class AppComponent implements OnInit {
 
   user: SocialUser;
-  fecha: string;
   juegos:any;
   detalleJuego:any;
   showDetalles:boolean = false;
   showJuegos:boolean = true;
   isLogged:boolean = false;
+  dia:string = '';
+  mes:string = '';
+  anio:string = '';
 
   constructor(
     private servicioCalendario: CalendarioApiService, 
@@ -39,9 +41,7 @@ export class AppComponent implements OnInit {
         this.user = socialUser;
         console.log(this.user);
         this.isLogged = true;
-        this.fecha = this.getToday();
-        console.log(this.fecha);
-        
+        this.getToday();
         this.mostrarJuegos();
       }
     ).catch(error => console.log(error));
@@ -50,17 +50,15 @@ export class AppComponent implements OnInit {
   logout(): void {
     this.authService.signOut();
     this.juegos = '';
-    this.fecha = '';
     this.isLogged = false;
 
   }
 
   mostrarJuegos(){
-    console.log(this.fecha);
-    this.formatDate();
-    console.log(this.fecha);
+    console.log('Fecha a buscar:');
+    console.log(this.anio + '' + this.mes + '' + this.dia);
     
-    this.servicioCalendario.getJuegos(this.fecha.replace(/-/g, '')).subscribe(data => {
+    this.servicioCalendario.getJuegos(this.anio + '' + this.mes + '' + this.dia).subscribe(data => {
       console.log(data);
       this.juegos = data
     });
@@ -89,17 +87,10 @@ export class AppComponent implements OnInit {
     
     if(mm<10){
         mm = '0' + mm;
-    } 
-    // today = dd+'/'+mm+'/'+yyyy;
-    today = yyyy + '-' + mm + '-' + dd;
-    return today;
-  }
-
-  formatDate(){
-    let fechaArray = this.fecha.split("-");
-    console.log(fechaArray);
-    if(Number(fechaArray[1]) > 12){
-      this.fecha = fechaArray[0] + '-' + fechaArray[2] + '-' + fechaArray[1];
     }
+    
+    this.dia = dd;
+    this.mes = mm;
+    this.anio = yyyy;
   }
 }
