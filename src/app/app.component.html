@@ -1,0 +1,120 @@
+<div class="container">
+  <h2 class="text-center">Calendario NBA</h2>
+  <div *ngIf="!isLogged" class="row py-4 text-center">
+    <div class="col-12">
+      <button class="btn btn-primary" type="button" (click)="signInWithGoogle()">Login</button>
+    </div>
+  </div>
+  <div *ngIf="isLogged" class="row">
+    <div class="col-8">
+      Bienvenido(a) <b>{{user.name}}</b>
+    </div>
+    <div class="col-4 text-right">
+      <button class="btn btn-danger" (click)="logout()">Logout</button>
+    </div>
+    <div class="col-12 py-4">
+      <h4>Escoge una fecha</h4>
+      <input type="date" name="fecha" [(ngModel)]="fecha" (ngModelChange)="mostrarJuegos($event)">
+    </div>
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <b>Juegos del Día</b>
+        </div>
+        <div class="card-body" *ngIf="juegos">
+          <table *ngIf="showJuegos" class="table table-striped">
+            <thead>
+              <tr>
+                <th>Equipo Local</th>
+                <th>Equipo Visitante</th>
+                <th>Hora Inicio</th>
+                <th>Score</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let juego of juegos.games">
+                <td>{{juego.hTeam.triCode}}</td>
+                <td>{{juego.vTeam.triCode}}</td>
+                <td>{{juego.startTimeEastern}}</td>
+                <td>{{juego.hTeam.score}} - {{juego.vTeam.score}}</td>
+                <td><button class="btn btn-warning" (click)="mostrarDetalleJuego(juego)">Detalle</button></td>
+              </tr> 
+            </tbody>
+          </table>
+          <div *ngIf="showDetalles" class="row">
+            <div class="col-12 text-right">
+              <button (click)="ocultarDetalleJuego()">Regresar</button>
+            </div>
+            <div *ngIf="detalleJuego.statusNum == 3" class="col-12">
+              <b>Partido ya jugado</b>
+              <div>{{detalleJuego.startDateEastern}} - {{detalleJuego.startTimeEastern}}</div>
+              <div>
+                Equipo Visitante: {{detalleJuego.vTeam.triCode}} - {{detalleJuego.vTeam.score}}
+                <br>
+                Equipo Local: {{detalleJuego.hTeam.triCode}} - {{detalleJuego.hTeam.score}}
+              </div>
+              <table class="table compact">
+                <thead>
+                  <tr>
+                    <th>Equipo</th>
+                    <th>1er</th>
+                    <th>2do</th>
+                    <th>3er</th>
+                    <th>4to</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{detalleJuego.vTeam.triCode}}</td>
+                    <td>{{detalleJuego.vTeam.linescore[0].score}}</td>
+                    <td>{{detalleJuego.vTeam.linescore[1].score}}</td>
+                    <td>{{detalleJuego.vTeam.linescore[2].score}}</td>
+                    <td>{{detalleJuego.vTeam.linescore[3].score}}</td>
+                    <td>{{detalleJuego.vTeam.score}}</td>
+                  </tr> 
+                  <tr>
+                    <td>{{detalleJuego.hTeam.triCode}}</td>
+                    <td>{{detalleJuego.hTeam.linescore[0].score}}</td>
+                    <td>{{detalleJuego.hTeam.linescore[1].score}}</td>
+                    <td>{{detalleJuego.hTeam.linescore[2].score}}</td>
+                    <td>{{detalleJuego.hTeam.linescore[3].score}}</td>
+                    <td>{{detalleJuego.hTeam.score}}</td>
+                  </tr> 
+                </tbody>
+              </table>
+              <div>Audiencia: {{detalleJuego.attendance}}</div>
+              <div>Tiempo de Juego: {{detalleJuego.gameDuration.hours}}:{{detalleJuego.gameDuration.minutes}}</div>
+            </div>
+            <div *ngIf="detalleJuego.statusNum == 2" class="col-12">
+              <b>Partido en proceso</b>
+            </div>
+            <div *ngIf="detalleJuego.statusNum == 1" class="col-12">
+              <b>Partido sin jugarse</b>
+              <div>{{detalleJuego.startDateEastern}} - {{detalleJuego.startTimeEastern}}</div>
+              <div class="py-3">
+                Equipo Visitante: {{detalleJuego.vTeam.win}} - {{detalleJuego.vTeam.loss}}
+                <br>
+                Equipo Local: {{detalleJuego.hTeam.win}} - {{detalleJuego.hTeam.loss}}
+              </div>
+              <div class="py-3">
+                Detalles del Juego:
+                <br>
+                Nombre del Estadio: {{detalleJuego.arena.name}}
+                <br>
+                Ver en: <span *ngFor="let national of detalleJuego.watch.broadcast.broadcasters.national">{{national.shortName}},</span>
+                <span *ngFor="let canadian of detalleJuego.watch.broadcast.broadcasters.canadian">{{canadian.shortName}},</span>
+                <span *ngFor="let vTeam of detalleJuego.watch.broadcast.broadcasters.vTeam">{{vTeam.shortName}},</span>
+                <span *ngFor="let hTeam of detalleJuego.watch.broadcast.broadcasters.hTeam">{{hTeam.shortName}},</span>
+                <span *ngFor="let spanish_hTeam of detalleJuego.watch.broadcast.broadcasters.spanish_hTeam">{{spanish_hTeam.shortName}},</span>
+                <span *ngFor="let spanish_vTeam of detalleJuego.watch.broadcast.broadcasters.spanish_vTeam">{{spanish_vTeam.shortName}},</span>
+                <span *ngFor="let spanish_national of detalleJuego.watch.broadcast.broadcasters.spanish_national">{{spanish_national.shortName}},</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
